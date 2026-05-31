@@ -24,6 +24,9 @@
 #ifndef JDEBUG_H_
 #define JDEBUG_H_
 
+#ifdef __WATCOMC__
+#include <io.h>
+#endif
 #include <stdio.h>
 
 #include "JDefs.h"

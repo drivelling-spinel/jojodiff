@@ -22,6 +22,9 @@
 #ifndef JFILEISTREAMAHEAD_H_
 #define JFILEISTREAMAHEAD_H_
 
+#ifdef __WATCOMC__
+#include <new>
+#endif
 #include <istream>
 using namespace std;
 

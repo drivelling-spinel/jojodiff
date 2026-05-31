@@ -1,5 +1,5 @@
 /*
- * JMatchTable.cpp
+ * JMatch.cpp
  *
  * Copyright (C) 2002-2011 Joris Heirbaut
  *
@@ -19,7 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "JMatchTable.h"
+#ifdef __WATCOMC__
+#include <io.h>
+#endif
+#include "JMatch.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

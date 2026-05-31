@@ -19,6 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef __WATCOMC__
+#include <io.h>
+#endif
 #include <stdlib.h>
 #include <new>
 #include <string.h>

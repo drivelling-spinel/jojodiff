@@ -35,18 +35,24 @@
 *
 *******************************************************************************/
 
+#ifdef __WATCOMC__
+#include <io.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "JDefs.h"
 
+#ifndef __WATCOMC__
 #define BLKSZE 4096
+#else
+#define BLKSZE 1024
+#endif
 
 /*
  * Global settings (may be modified by commandline options)
  */
 int giVerbse = 0;       /* Verbose level 0=no, 1=normal, 2=high            */
-int gbTst = false;      /* Test mode = only display contents of patch file, no i/o */
 FILE *stddbg;           /* Debug output to stddbg or stdout                */
 
 /*******************************************************************************
@@ -92,6 +98,9 @@ off_t ufGetInt( FILE *lpFil ){
 #else
     fprintf(stderr, "64-bit length numbers not supported!\n");
     exit(EXI_LRG);
+#ifdef __WATCOMC__
+    return -1;
+#endif
 #endif
   }
 }
@@ -173,6 +182,10 @@ void jpatch ( FILE *asFilOrg, FILE *asFilPch, FILE *asFilOut )
               lzMod = 0;
           }
           while (lzOff > BLKSZE) {
+              if (giVerbse >= 3) {
+                  fprintf(stddbg, ""P8zd" "P8zd" ~~~ %"PRIzd"\n",
+                    ftell(asFilOrg)+lzMod, ftell(asFilOut), lzOff) ;
+              }
               if (fread(&lcDta, 1, BLKSZE, asFilOrg ) != BLKSZE) {
                   fprintf(stderr, "Error reading original file.\n");
                   exit(EXI_RED);
@@ -184,6 +197,10 @@ void jpatch ( FILE *asFilOrg, FILE *asFilPch, FILE *asFilOut )
               lzOff-=BLKSZE;
           }
           if (lzOff > 0){
+              if (giVerbse >= 3) {
+                  fprintf(stddbg, ""P8zd" "P8zd" ~~~ %"PRIzd"\n",
+                    ftell(asFilOrg)+lzMod, ftell(asFilOut), lzOff) ;
+              }
               if (fread(&lcDta, 1, lzOff, asFilOrg) != lzOff) {
                   fprintf(stderr, "Error reading original file.\n");
                   exit(EXI_RED);
@@ -317,9 +334,6 @@ int main(int aiArgCnt, char *acArg[])
       stddbg = stdout;
     } else if (strcmp(acArg[liOptArgCnt], "-h") == 0) {
       lcHlp = 'h' ;
-    } else if (strcmp(acArg[liOptArgCnt], "-t") == 0) {
-        giVerbse = 2;
-        gbTst = true ;
     } else {
       lbOptArgDne = true;
       liOptArgCnt--;

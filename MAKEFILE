@@ -1,0 +1,76 @@
+# Watcom Makefile 
+.erase
+
+!ifndef DEBUG
+DEBUG=0
+!endif
+
+!ifndef WATCOM
+WATCOM=\WATCOM
+!endif
+
+CPP=$(WATCOM)\binw\wpp386.exe
+LINK=$(WATCOM)\binw\wlink.exe
+
+
+!if $(DEBUG)
+NAME=jdifd
+OUTD=outd
+C_DEBUG_FLAGS=-D_DEBUG
+!else
+NAME=jdiff
+OUTD=out
+C_DEBUG_FLAGS=
+!endif
+C_EXTRA_FLAGS= 
+#not setting these in Watcom
+#C_EXTRA_FLAGS=$(C_EXTRA_FLAGS) -D_FILE_OFFSET_BITS=64 -U_LARGEFILE64_SOURCE
+CPP_OPT_FLAGS=-q -oxa -mf -5s -fp5 -fpi87 -xs 
+LD_FLAGS=
+LD_EXTRA_FLAGS=op M=$(OUTD)/$(NAME).map
+
+OBJFILES = &
+	$(OUTD)/main.obj		&
+	$(OUTD)/jdebug.obj		&
+	$(OUTD)/jdiff.obj		&
+	$(OUTD)/jfahead.obj		&
+	$(OUTD)/jfistrm.obj		&
+	$(OUTD)/jfiahead.obj		&
+	$(OUTD)/jhashpos.obj		&
+	$(OUTD)/jmatch.obj		&
+	$(OUTD)/joutasc.obj		&
+	$(OUTD)/joutbin.obj		&
+	$(OUTD)/joutrgn.obj		
+	
+INCLUDES=-I$(WATCOM)\h
+LIBS=
+
+{src}.cpp{$(OUTD)}.obj
+	*@$(CPP) $(C_DEBUG_FLAGS) $(CPP_OPT_FLAGS) $(CPPFLAGS) -Isrc $(INCLUDES) -fo=$@ $<
+
+all: $(OUTD) $(OUTD)\$(NAME).exe $(OUTD)\jpatch.exe
+
+$(OUTD):
+	@mkdir $(OUTD)
+
+$(OUTD)\jpatch.obj: src\jpatch.cpp
+	*@$(WATCOM)\binw\wpp.exe -q -oxa -fp2 -fpi87 -xs $(C_DEBUG_FLAGS) -Isrc $(INCLUDES) -fo=$@ $<
+
+$(OUTD)\jpatch.exe: $(OUTD)/jpatch.obj
+	*@$(LINK) @<<
+system dos
+file {$<}
+name $@
+<<
+
+$(OUTD)\$(NAME).exe: $(OBJFILES)
+	*@$(LINK) @<<
+system dos4g
+file {$(OBJFILES)}
+name $@
+<<
+
+clean: .SYMBOLIC
+	@del $(OUTD)\$(NAME).exe
+	@del $(OUTD)\*.obj
+	@del *.err

@@ -1,5 +1,5 @@
 /*
- * JFileIStream.cpp
+ * JFIStrm.cpp
  *
  * Copyright (C) 2002-2011 Joris Heirbaut
  *
@@ -19,10 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef __WATCOMC__
+#include <io.h>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "JFileIStream.h"
+#include "JFIStrm.h"
 #include "JDebug.h"
 
 namespace JojoDiff {

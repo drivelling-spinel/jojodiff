@@ -131,6 +131,9 @@
  * Joris Heirbaut        v0.8.1  30-11-2011 Throuw out exception handling for MinGW (trying to reduce exe size)
  *
  *******************************************************************************/
+#ifdef __WATCOMC__
+#include <io.h>
+#endif
 #include "JDefs.h"
 #include "JDiff.h"
 #include <limits.h>

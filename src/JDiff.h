@@ -140,7 +140,7 @@
 #include "JDefs.h"
 #include "JFile.h"
 #include "JHashPos.h"
-#include "JMatchTable.h"
+#include "JMatch.h"
 #include "JOut.h"
 
 namespace JojoDiff {

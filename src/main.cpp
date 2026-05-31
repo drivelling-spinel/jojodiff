@@ -120,6 +120,9 @@
 /*
  * Includes
  */
+#ifdef __WATCOMC__
+#include <io.h>
+#endif
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -134,8 +137,11 @@ using namespace std ;
 #include <iostream>
 #include <istream>
 #include <fstream>
-#include "JFileIStream.h"
-#include "JFileIStreamAhead.h"
+#ifdef __WATCOMC__
+#define ios_base ios
+#endif
+#include "JFIStrm.h"
+#include "JFIAhead.h"
 #endif
 
 #include "JDefs.h"
@@ -152,6 +158,9 @@ using namespace JojoDiff ;
 *******************************************************************************/
 int main(int aiArgCnt, char *acArg[])
 {
+#ifdef __WATCOMC__
+try {
+#endif
   const char *lcFilNamOrg;
   const char *lcFilNamNew;
   const char *lcFilNamOut;
@@ -535,4 +544,21 @@ int main(int aiArgCnt, char *acArg[])
       return(1);    /* no differences found */
   else
       return(0);    /* differences found    */
+
+#ifdef __WATCOMC__
+  }
+  catch(std::bad_alloc &ex) {
+    std::cerr << "Unhandled bad_alloc most likely due to insufficient memory." << std::endl
+              << "Hint: " << std::endl
+              << "  Options -f or -ff require less memory." << std::endl
+              << std::endl;
+  }
+  catch(std::exception & ex) {
+    std::cerr << "Unhandled exception: " << ex.what() << std::endl;
+  }
+  catch(...) {
+    std::cerr << "Unhandled exception of unexpected type !" 
+              << std::endl;
+  }
+#endif
 }
