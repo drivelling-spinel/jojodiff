@@ -149,6 +149,7 @@ using namespace std ;
 #include "JOutBin.h"
 #include "JOutAsc.h"
 #include "JOutRgn.h"
+#include "JOutText.h"
 #include "JFile.h"
 
 using namespace JojoDiff ;
@@ -238,9 +239,11 @@ try {
         liOutTyp = 1 ;
     } else if (strcmp(acArg[liOptArgCnt], "-lr") == 0) {
         liOutTyp = 2 ;
+    } else if (strcmp(acArg[liOptArgCnt], "-t") == 0) {
+        liOutTyp = 3 ;
     } else if (strcmp(acArg[liOptArgCnt], "-b") == 0) {
         // Larger hashtables
-    	lbCmpAll = true ;
+        lbCmpAll = true ;
         llBufSze = 4096 * 1024 ;
         lbSrcBkt = true;
         liSrcScn = 1 ;
@@ -249,7 +252,7 @@ try {
         liHshMbt = 32 ; // 32meg elements
     } else if (strcmp(acArg[liOptArgCnt], "-f") == 0) {
         // No compare out-of-buffer
-    	lbCmpAll = false ;
+        lbCmpAll = false ;
         llBufSze = 64 * 1024 ;
         lbSrcBkt = true ;
         liSrcScn = 1  ;
@@ -258,7 +261,7 @@ try {
         liHshMbt = 4 ; // 4Meg samples
     } else if (strcmp(acArg[liOptArgCnt], "-ff") == 0) {
         // No compare out-of-buffer and no backtracing
-    	lbCmpAll = false ;
+        lbCmpAll = false ;
         llBufSze = 4096 * 1024 ;
         lbSrcBkt = true ;
         liSrcScn = 0 ;
@@ -318,6 +321,7 @@ try {
     fprintf(JDebug::stddbg, "along with this program.  If not, see <http://www.gnu.org/licenses/>.\n");
     fprintf(JDebug::stddbg, "\n");
 
+#ifndef __WATCOMC__
     off_t maxoff_t_gb = (MAX_OFF_T >> 30) + 1 ;
     const char *maxoff_t_mul = "GB";
     if (maxoff_t_gb > 1024){
@@ -326,6 +330,7 @@ try {
     }
     fprintf(JDebug::stddbg, "File adressing is %d bit (files up to %"PRIzd" %s), samples are %d bytes.\n\n",
         sizeof(off_t) * 8, maxoff_t_gb, maxoff_t_mul, SMPSZE) ;
+#endif
   }
 
   if ((aiArgCnt - liOptArgCnt < 3) || (lcHlp == 'h') || (liVerbse>2)) {
@@ -335,6 +340,7 @@ try {
     fprintf(JDebug::stddbg, "  -h          Help (this text).\n");
     fprintf(JDebug::stddbg, "  -l          Listing (ascii output).\n");
     fprintf(JDebug::stddbg, "  -lr         Regions (ascii output).\n");
+    fprintf(JDebug::stddbg, "  -t          Text output.\n");
     fprintf(JDebug::stddbg, "  -do         Write verbose and debug info to stdout instead of stddbg.\n");
     fprintf(JDebug::stddbg, "  -b          Try to be better (using more memory).\n");
     fprintf(JDebug::stddbg, "  -f          Try to be faster: no out of buffer compares.\n");
@@ -361,11 +367,13 @@ try {
     fprintf(JDebug::stddbg, "  Sample size is always lowered to the largest n-bit prime (n < 32)\n");
     fprintf(JDebug::stddbg, "  Original and new file must be random access files.\n");
     fprintf(JDebug::stddbg, "  Output is sent to standard output if output file is missing.\n");
+#ifndef __WATCOMC__
     fprintf(JDebug::stddbg, "Hint:\n");
     fprintf(JDebug::stddbg, "  Do not use jdiff directly on compressed files, such as zip, gzip, rar, ...\n");
     fprintf(JDebug::stddbg, "  Instead use uncompressed files, such as tar, cpio or zip-0, and then compress\n");
     fprintf(JDebug::stddbg, "  the jdiff's output file afterwards.\n");
     fprintf(JDebug::stddbg, "\n");
+#endif
                     /******************************************************************************/
     if ((aiArgCnt - liOptArgCnt < 3) || (lcHlp == 'h'))
         exit(EXI_ARG);
@@ -453,6 +461,7 @@ try {
 
   /* Init output */
   JOut *lpOut ;
+  std::string header;
   switch (liOutTyp){
   case 0:
       lpOut = new JOutBin(lpFilOut);
@@ -461,8 +470,13 @@ try {
       lpOut = new JOutAsc(lpFilOut);
       break;
   case 2:
-  default:  // XXX get rid of uninitialized warning
       lpOut = new JOutRgn(lpFilOut);
+      break;
+  case 3:
+  default:  // XXX get rid of uninitialized warning
+      header = header + "original *" + lcFilNamOrg 
+               + "* new *" + lcFilNamNew + "*";
+      lpOut = new JOutText(lpFilOut, header);
       break;
   }
 

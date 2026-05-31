@@ -72,7 +72,7 @@
 /*
  * Global definitions
  */
-#define JDIFF_VERSION   "0.8.1 (beta) December 2011"
+#define JDIFF_VERSION   "0.8.1text (beta)"
 #define JDIFF_COPYRIGHT "Copyright (C) 2002-2005,2009,2011 Joris Heirbaut"
 
 #define uchar unsigned char
