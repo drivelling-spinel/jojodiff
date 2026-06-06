@@ -11,6 +11,6 @@ See original [readme.txt](readme.txt) for more information.
 
 This fork provides DOS versions of `JDIFF` and `JPATCH` and also adds [text format](text.md) for storing binary patches.
 
-Copyright © 2002-2011 Joris Heirbaut
+Copyright © 2002-2011 Joris Heirbaut   
 Forked in 2026 by Ludicrous_peridot
 

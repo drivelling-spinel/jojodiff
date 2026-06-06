@@ -391,7 +391,10 @@ int main(int aiArgCnt, char *acArg[])
 
   /* Open files */
   if ( strcmp(lcFilNamOrg, std) == 0 )
-    lpFilOrg = stdin ;
+#ifndef __WATCOMC__
+    lpFilOrg = stdin 
+#endif
+    ;
   else
     lpFilOrg = fopen(lcFilNamOrg, "rb") ;
   if ( lpFilOrg == NULL ) {
@@ -400,7 +403,10 @@ int main(int aiArgCnt, char *acArg[])
   }
 
   if ( strcmp(lcFilNamPch, std) == 0 )
-    lpFilPch = stdin ;
+#ifndef __WATCOMC__
+    lpFilPch = stdin 
+#endif
+;
   else
     lpFilPch = fopen(lcFilNamPch, "rb") ;
   if ( lpFilPch == NULL ) {
@@ -410,7 +416,10 @@ int main(int aiArgCnt, char *acArg[])
   }
 
   if ( strcmp(lcFilNamOut, std) == 0 )
-    lpFilOut = stdout ;
+#ifndef __WATCOMC__
+    lpFilOut = stdout 
+#endif
+    ;
   else
     lpFilOut = fopen(lcFilNamOut, "wb") ;
   if ( lpFilOut == NULL ) {

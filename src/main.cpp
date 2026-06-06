@@ -464,6 +464,12 @@ try {
   std::string header;
   switch (liOutTyp){
   case 0:
+#ifdef __WATCOMC__
+      if ( lpFilOut == stdout ) {
+        fprintf(JDebug::stddbg, "Could not open output file for writing.\n") ;
+        exit(EXI_OUT);
+      }
+#endif
       lpOut = new JOutBin(lpFilOut);
       break;
   case 1:

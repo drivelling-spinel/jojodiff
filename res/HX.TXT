@@ -1,0 +1,19 @@
+To build executable with embedded HDPMI32 server
+put into this directory (RES):
+* contents of BIN directory from HXRT and HXDEV packages
+* contents of OWSUPP\V19\DOS from HXDEV package
+
+The bare minimum set of required files is:
+
+dkrnl32.dll
+dpmild32.exe
+patchpe.exe
+loadpex.bin
+hxows.lib
+cstrtdhx.obj
+
+To keep building DOS32/A binaries, 
+regardless of the contents of this directory (RES),
+add NOHX=1 to wmake command line.
+
+

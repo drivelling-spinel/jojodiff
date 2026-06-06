@@ -14,18 +14,18 @@ LINK=$(WATCOM)\binw\wlink.exe
 
 
 !if $(DEBUG)
-NAME=jdifd
+NAME=jdifftd
 OUTD=outd
 C_DEBUG_FLAGS=-D_DEBUG
 !else
-NAME=jdiff
+NAME=jdifft
 OUTD=out
 C_DEBUG_FLAGS=
 !endif
 C_EXTRA_FLAGS= 
 #not setting these in Watcom
 #C_EXTRA_FLAGS=$(C_EXTRA_FLAGS) -D_FILE_OFFSET_BITS=64 -U_LARGEFILE64_SOURCE
-CPP_OPT_FLAGS=-q -oxa -mf -5s -fp5 -fpi87 -xs 
+CPP_OPT_FLAGS=-q -oxa -mf -5s -fp5 -fpi87 -xs
 LD_FLAGS=
 LD_EXTRA_FLAGS=op M=$(OUTD)/$(NAME).map
 
@@ -40,7 +40,8 @@ OBJFILES = &
 	$(OUTD)/jmatch.obj		&
 	$(OUTD)/joutasc.obj		&
 	$(OUTD)/joutbin.obj		&
-	$(OUTD)/joutrgn.obj		
+	$(OUTD)/joutrgn.obj		&
+	$(OUTD)/jouttext.obj		
 	
 INCLUDES=-I$(WATCOM)\h
 LIBS=
@@ -48,29 +49,63 @@ LIBS=
 {src}.cpp{$(OUTD)}.obj
 	*@$(CPP) $(C_DEBUG_FLAGS) $(CPP_OPT_FLAGS) $(CPPFLAGS) -Isrc $(INCLUDES) -fo=$@ $<
 
-all: $(OUTD) $(OUTD)\$(NAME).exe $(OUTD)\jpatch.exe
+
+.BEFORE
+!ifndef NOHX
+	@if exist RES\PATCHPE.EXE @set PATCHPE=1
+!endif
+
+all: $(OUTD) $(OUTD)\jpatcht.exe $(OUTD)\$(NAME).exe 
 
 $(OUTD):
 	@mkdir $(OUTD)
 
+.ERASE
+$(OUTD)\$(NAME).exe: $(OBJFILES)
+!ifndef NOHX
+	@if z%PATCHPE==z &
+!endif
+	*@$(LINK) @<<
+system dos32a
+file {$(OBJFILES)}
+name $@
+<<
+!ifndef NOHX
+	@if not z%PATCHPE==z %make linkpe
+!endif
+
 $(OUTD)\jpatch.obj: src\jpatch.cpp
 	*@$(WATCOM)\binw\wpp.exe -q -oxa -fp2 -fpi87 -xs $(C_DEBUG_FLAGS) -Isrc $(INCLUDES) -fo=$@ $<
 
-$(OUTD)\jpatch.exe: $(OUTD)/jpatch.obj
+$(OUTD)\jpatcht.exe: $(OUTD)/jpatch.obj
 	*@$(LINK) @<<
 system dos
 file {$<}
 name $@
 <<
 
-$(OUTD)\$(NAME).exe: $(OBJFILES)
-	*@$(LINK) @<<
-system dos4g
-file {$(OBJFILES)}
-name $@
-<<
-
 clean: .SYMBOLIC
-	@del $(OUTD)\$(NAME).exe
+	@del $(OUTD)\*.exe
+	@del $(OUTD)\*.pe
 	@del $(OUTD)\*.obj
+	@del $(OUTD)\*.bak
+	@del *.tmp
 	@del *.err
+
+linkpe: .SYMBOLIC
+	del $(OUTD)\$(NAME).EXE
+	*@$(LINK) @<<
+format windows nt
+runtime console=4.0
+path .;RES
+libpath RES;$(WATCOM)\lib386\dos;$(WATCOM)\lib386
+library hxows
+libfile cstrtdhx
+file {$(OBJFILES)}
+name $(OUTD)\$(NAME).PE
+op stub=RES\LOADPEX.BIN
+<<
+	@RES\DPMILD32 RES\PATCHPE.EXE $(OUTD)\$(NAME).PE
+	@move $(OUTD)\$(NAME).PE $(OUTD)\$(NAME).EXE
+
+
