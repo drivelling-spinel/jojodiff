@@ -63,7 +63,7 @@ $(OUTD):
 .ERASE
 $(OUTD)\$(NAME).exe: $(OBJFILES)
 !ifndef NOHX
-	@if z%PATCHPE==z &
+	@if z$(%PATCHPE)==z &
 !endif
 	*@$(LINK) @<<
 system dos32a
@@ -71,7 +71,7 @@ file {$(OBJFILES)}
 name $@
 <<
 !ifndef NOHX
-	@if not z%PATCHPE==z %make linkpe
+	@if not z$(%PATCHPE)==z %make linkpe
 !endif
 
 $(OUTD)\jpatch.obj: src\jpatch.cpp

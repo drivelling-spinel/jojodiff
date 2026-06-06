@@ -10,6 +10,11 @@ will create a file `archive0001b.tar` which is identical to `archive0001.tar`.
 See original [readme.txt](readme.txt) for more information.
 
 This fork provides DOS versions of `JDIFF` and `JPATCH` and also adds [text format](text.md) for storing binary patches.
+Executables are renamed to `jdiffT` and `jpatchT` respectively (_casing for emphasis only_) to differentiate from the original ones.
+While the code is offered with support for Watcom C++ compiler and has been validated wtih Open Watcom 1.9 in FreeDOS,
+no binaries built with Open Watcom are provided due to licensing conflict.
+
+See `makedmc.cmd` for instructions on cross-compiling `JPATCH` with Digital Mars C++ Compiler from Windows.
 
 Copyright © 2002-2011 Joris Heirbaut   
 Forked in 2026 by Ludicrous_peridot

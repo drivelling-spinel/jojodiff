@@ -5,6 +5,7 @@ put into this directory (RES):
 
 The bare minimum set of required files is:
 
+hdpmi32.exe
 dkrnl32.dll
 dpmild32.exe
 patchpe.exe
